@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="description" content="Top Finder - Find any heating part. Cheapest price. Nearest branch.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Top Finder">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Top Finder | Heating Parts Price Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --black:#0a0a0a; --black-light:#141414; --black-card:#1a1a1a;
+  --yellow:#f5c518; --yellow-hover:#ffd740; --yellow-dim:rgba(245,197,24,0.08);
+  --blue:#2d7ff9; --white:#ffffff;
+  --gray-400:#9e9e9e; --gray-600:#6b6b6b; --gray-800:#333333;
+  --green:#4ade80; --red:#f87171;
+  --radius:10px; --radius-lg:16px; --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+}
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--black); color:var(--white); line-height:1.6; -webkit-font-smoothing:antialiased; min-height:100vh; }
+h1,h2,h3,h4 { font-family:'Plus Jakarta Sans',sans-serif; line-height:1.15; }
+
+.screen { display:none; min-height:100vh; flex-direction:column; }
+.screen.active { display:flex; }
+
+#searchScreen { background:var(--black); padding:0; }
+
+.search-header {
+  background:rgba(10,10,10,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(245,197,24,0.1);
+  padding:20px 20px 16px; position:sticky; top:0; z-index:50;
+}
+.logo-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.logo { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.3rem; color:var(--white); letter-spacing:-0.02em; }
+.logo span { color:var(--yellow); }
+.header-badge { font-size:0.72rem; font-weight:600; color:var(--yellow); background:var(--yellow-dim); border:1px solid rgba(245,197,24,0.2); padding:4px 10px; border-radius:100px; }
+
+.search-bar { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+.search-input-wrap { flex:1; position:relative; }
+.search-input-wrap svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--gray-600); pointer-events:none; }
+.search-input { width:100%; background:var(--black-card); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); padding:13px 14px 13px 42px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.95rem; transition:border-color var(--transition); }
+.search-input::placeholder { color:var(--gray-600); }
+.search-input:focus { outline:none; border-color:rgba(245,197,24,0.4); box-shadow:0 0 0 3px rgba(245,197,24,0.06); }
+.search-btn { background:var(--yellow); color:var(--black); border:none; padding:13px 20px; border-radius:var(--radius); font-weight:700; font-size:0.9rem; cursor:pointer; transition:all var(--transition); font-family:'DM Sans',sans-serif; white-space:nowrap; }
+.search-btn:hover { background:var(--yellow-hover); }
+.search-btn:disabled { opacity:0.6; cursor:not-allowed; }
+
+.postcode-row { display:flex; gap:10px; align-items:center; }
+.postcode-input-wrap { flex:1; position:relative; }
+.postcode-input-wrap svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--gray-600); pointer-events:none; }
+.postcode-input { width:100%; background:var(--black-card); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); padding:11px 14px 11px 42px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.85rem; transition:border-color var(--transition); text-transform:uppercase; }
+.postcode-input::placeholder { color:var(--gray-600); text-transform:none; }
+.postcode-input:focus { outline:none; border-color:rgba(245,197,24,0.4); }
+.postcode-input.invalid { border-color:rgba(248,113,113,0.5); }
+.postcode-status { font-size:0.72rem; color:var(--gray-600); white-space:nowrap; }
+.postcode-status.set { color:var(--green); }
+
+.hero-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center; position:relative; overflow:hidden; }
+.hero-state::before { content:''; position:absolute; top:-30%; right:-20%; width:500px; height:500px; background:radial-gradient(circle,rgba(245,197,24,0.05) 0%,transparent 70%); pointer-events:none; }
+.hero-title { font-size:clamp(2rem,6vw,3rem); color:var(--white); letter-spacing:-0.03em; margin-bottom:14px; max-width:480px; }
+.hero-title em { font-style:normal; background:linear-gradient(135deg,var(--yellow),var(--yellow-hover)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero-sub { font-size:1rem; color:var(--gray-400); max-width:360px; margin-bottom:32px; line-height:1.7; }
+
+.quick-searches { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:40px; }
+.quick-tag { background:var(--black-card); border:1px solid rgba(255,255,255,0.08); padding:8px 14px; border-radius:100px; font-size:0.82rem; color:var(--gray-400); cursor:pointer; transition:all var(--transition); }
+.quick-tag:hover { border-color:rgba(245,197,24,0.3); color:var(--yellow); }
+
+.suppliers-row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+.supplier-pill { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); padding:6px 12px; border-radius:8px; font-size:0.78rem; color:var(--gray-600); }
+
+.loading-state { flex:1; display:none; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center; }
+.loading-state.active { display:flex; }
+.loading-spinner { width:48px; height:48px; border:3px solid rgba(245,197,24,0.1); border-top-color:var(--yellow); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:20px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { font-size:1rem; color:var(--gray-400); margin-bottom:8px; }
+.loading-sub { font-size:0.85rem; color:var(--gray-600); }
+.loading-suppliers { display:flex; gap:8px; margin-top:24px; flex-wrap:wrap; justify-content:center; }
+.loading-supplier { padding:6px 12px; border-radius:8px; font-size:0.78rem; font-weight:600; border:1px solid rgba(255,255,255,0.08); color:var(--gray-600); transition:all 0.3s ease; }
+.loading-supplier.scanning { border-color:rgba(245,197,24,0.4); color:var(--yellow); background:var(--yellow-dim); }
+.loading-supplier.done { border-color:rgba(74,222,128,0.3); color:var(--green); background:rgba(74,222,128,0.06); }
+
+.results-state { flex:1; display:none; flex-direction:column; }
+.results-state.active { display:flex; }
+.results-meta { padding:16px 20px 12px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:8px; }
+.results-count { font-size:0.85rem; color:var(--gray-400); }
+.results-count strong { color:var(--white); }
+.cache-badge { display:inline-block; margin-left:8px; font-size:0.68rem; padding:2px 8px; border-radius:100px; background:rgba(45,127,249,0.1); color:var(--blue); border:1px solid rgba(45,127,249,0.2); font-weight:600; }
+.outcode-badge { display:inline-block; margin-left:8px; font-size:0.68rem; padding:2px 8px; border-radius:100px; background:var(--yellow-dim); color:var(--yellow); border:1px solid rgba(245,197,24,0.2); font-weight:600; }
+.sort-btn { background:var(--black-card); border:1px solid rgba(255,255,255,0.08); color:var(--gray-400); padding:6px 12px; border-radius:8px; font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all var(--transition); }
+.sort-btn:hover { border-color:var(--yellow); color:var(--yellow); }
+
+.results-list { padding:12px 16px; flex:1; overflow-y:auto; }
+.result-card { background:var(--black-card); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius-lg); padding:14px; margin-bottom:10px; display:flex; gap:14px; align-items:center; transition:all var(--transition); cursor:pointer; text-decoration:none; color:inherit; }
+.result-card:hover { border-color:rgba(245,197,24,0.3); transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+.result-card.best-price { border-color:rgba(74,222,128,0.25); background:rgba(74,222,128,0.03); }
+
+.result-image { width:64px; height:64px; border-radius:10px; background:#fff; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.result-image img { width:100%; height:100%; object-fit:contain; }
+.result-image-fallback { width:64px; height:64px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800; flex-shrink:0; letter-spacing:0.05em; text-align:center; }
+
+.result-body { flex:1; min-width:0; }
+.result-supplier-name { font-size:0.72rem; color:var(--gray-600); margin-bottom:3px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+.result-product-name { font-size:0.9rem; color:var(--white); font-weight:500; margin-bottom:6px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.result-tags { display:flex; gap:6px; flex-wrap:wrap; }
+.tag { font-size:0.7rem; padding:3px 8px; border-radius:6px; font-weight:600; }
+.tag-stock { background:rgba(74,222,128,0.1); color:var(--green); }
+.tag-nostock { background:rgba(248,113,113,0.1); color:var(--red); }
+.tag-best { background:rgba(74,222,128,0.1); color:var(--green); }
+.tag-delivery { background:rgba(45,127,249,0.1); color:var(--blue); }
+.tag-branch { background:var(--yellow-dim); color:var(--yellow); border:1px solid rgba(245,197,24,0.2); }
+
+.result-price-col { text-align:right; flex-shrink:0; }
+.result-price { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.25rem; font-weight:800; color:var(--yellow); display:block; }
+.result-price.green { color:var(--green); }
+.result-arrow { color:var(--gray-600); margin-top:6px; font-size:1rem; }
+
+.error-state { flex:1; display:none; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center; }
+.error-state.active { display:flex; }
+.error-icon { font-size:3rem; margin-bottom:16px; }
+.error-title { font-size:1.1rem; color:var(--white); margin-bottom:8px; }
+.error-sub { font-size:0.88rem; color:var(--gray-600); margin-bottom:24px; }
+.retry-btn { background:var(--yellow); color:var(--black); border:none; padding:12px 28px; border-radius:var(--radius); font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; }
+
+.bottom-nav { background:rgba(10,10,10,0.97); backdrop-filter:blur(16px); border-top:1px solid rgba(255,255,255,0.06); padding:12px 0 max(12px,env(safe-area-inset-bottom)); display:flex; }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px; transition:all var(--transition); background:none; border:none; color:var(--gray-600); font-family:'DM Sans',sans-serif; }
+.nav-item.active { color:var(--yellow); }
+.nav-item svg { width:22px; height:22px; }
+.nav-item span { font-size:0.68rem; font-weight:600; }
+
+#historyScreen { background:var(--black); }
+.screen-header { padding:20px 20px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.screen-header h2 { font-size:1.3rem; color:var(--white); font-family:'Plus Jakarta Sans',sans-serif; }
+.screen-header p { font-size:0.85rem; color:var(--gray-600); margin-top:4px; }
+.history-list { flex:1; overflow-y:auto; padding:12px 16px; }
+.history-item { background:var(--black-card); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:all var(--transition); }
+.history-item:hover { border-color:rgba(245,197,24,0.2); }
+.history-query { font-size:0.9rem; color:var(--white); font-weight:500; }
+.history-time { font-size:0.75rem; color:var(--gray-600); margin-top:2px; }
+.history-arrow { color:var(--gray-600); font-size:1.1rem; }
+
+.empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; text-align:center; }
+.empty-icon { font-size:3rem; margin-bottom:16px; opacity:0.5; }
+.empty-title { font-size:1rem; color:var(--gray-400); margin-bottom:6px; }
+.empty-sub { font-size:0.85rem; color:var(--gray-600); }
+
+#aboutScreen { background:var(--black); }
+.about-content { flex:1; overflow-y:auto; padding:20px; }
+.about-logo-wrap { text-align:center; padding:32px 0 24px; }
+.about-logo { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:2rem; color:var(--white); }
+.about-logo span { color:var(--yellow); }
+.about-tagline { font-size:0.9rem; color:var(--gray-600); margin-top:6px; }
+.about-version { font-size:0.78rem; color:var(--gray-600); margin-top:4px; }
+.about-section { margin-bottom:28px; }
+.about-section h3 { font-size:0.75rem; font-weight:700; color:var(--gray-600); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06); }
+.about-card { background:var(--black-card); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:16px; margin-bottom:8px; }
+.about-card-title { font-size:0.92rem; color:var(--white); font-weight:600; margin-bottom:4px; }
+.about-card-sub { font-size:0.83rem; color:var(--gray-600); line-height:1.6; }
+.supplier-status-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.supplier-status-item { background:var(--black-card); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius); padding:12px 14px; display:flex; align-items:center; gap:10px; }
+.status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.status-dot.live { background:var(--green); }
+.status-dot.soon { background:var(--yellow); }
+.status-name { font-size:0.85rem; color:var(--white); font-weight:500; }
+.status-label { font-size:0.72rem; color:var(--gray-600); }
+.by-topboilercare { text-align:center; padding:24px 0 8px; font-size:0.82rem; color:var(--gray-600); }
+.by-topboilercare a { color:var(--yellow); text-decoration:none; }
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--black-card); border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:10px 20px; border-radius:100px; font-size:0.85rem; font-weight:500; opacity:0; transition:all 0.3s ease; z-index:999; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+@media (min-width:600px) {
+  .results-list { max-width:680px; margin:0 auto; width:100%; }
+  .history-list { max-width:680px; margin:0 auto; width:100%; }
+  .about-content { max-width:600px; margin:0 auto; }
+  .hero-state { max-width:680px; margin:0 auto; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="searchScreen">
+  <div class="search-header">
+    <div class="logo-row">
+      <div class="logo">Top <span>Finder</span></div>
+      <div class="header-badge">Beta</div>
+    </div>
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Part name, model number, boiler make..." autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+      <button class="search-btn" id="searchBtn" onclick="doSearch()">Search</button>
+    </div>
+    <div class="postcode-row">
+      <div class="postcode-input-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <input type="text" class="postcode-input" id="postcodeInput" placeholder="Your postcode (e.g. E1 6QL) for nearest branch" autocomplete="postal-code" maxlength="8">
+      </div>
+      <span class="postcode-status" id="postcodeStatus">Optional</span>
+    </div>
+  </div>
+
+  <div class="hero-state" id="heroState">
+    <h1 class="hero-title">Find any part.<br><em>Best price. Nearest branch.</em></h1>
+    <p class="hero-sub">Add a postcode for nearest branch info. Search Screwfix, City Plumbing, BES in one hit.</p>
+    <div class="quick-searches">
+      <div class="quick-tag" onclick="quickSearch('Honeywell zone valve')">Honeywell zone valve</div>
+      <div class="quick-tag" onclick="quickSearch('Worcester Bosch pump')">Worcester Bosch pump</div>
+      <div class="quick-tag" onclick="quickSearch('Ideal Logic heat exchanger')">Ideal Logic heat exchanger</div>
+      <div class="quick-tag" onclick="quickSearch('15mm compression fitting')">15mm compression fitting</div>
+      <div class="quick-tag" onclick="quickSearch('Vaillant PCB')">Vaillant PCB</div>
+      <div class="quick-tag" onclick="quickSearch('Baxi gas valve')">Baxi gas valve</div>
+    </div>
+    <div class="suppliers-row">
+      <div class="supplier-pill"><span style="color:#fff;font-weight:700;font-size:0.7rem;">SFX</span> Screwfix</div>
+      <div class="supplier-pill"><span style="color:#e30613;font-weight:700;font-size:0.7rem;">CP</span> City Plumbing</div>
+      <div class="supplier-pill"><span style="color:#00843d;font-weight:700;font-size:0.7rem;">BES</span> BES</div>
+      <div class="supplier-pill"><span style="color:var(--yellow);font-weight:700;font-size:0.7rem;">+more</span></div>
+    </div>
+  </div>
+
+  <div class="loading-state" id="loadingState">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Searching suppliers...</div>
+    <div class="loading-sub" id="loadingQuery"></div>
+    <div class="loading-suppliers">
+      <div class="loading-supplier" id="ls-screwfix">Screwfix</div>
+      <div class="loading-supplier" id="ls-cityplumbing">City Plumbing</div>
+      <div class="loading-supplier" id="ls-bes">BES</div>
+    </div>
+  </div>
+
+  <div class="results-state" id="resultsState">
+    <div class="results-meta">
+      <div class="results-count" id="resultsCount">0 results</div>
+      <button class="sort-btn" id="sortBtn" onclick="toggleSort()">Sort: Price ↑</button>
+    </div>
+    <div class="results-list" id="resultsList"></div>
+  </div>
+
+  <div class="error-state" id="errorState">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title" id="errorTitle">Search failed</div>
+    <div class="error-sub" id="errorMsg">Something went wrong. Please try again.</div>
+    <button class="retry-btn" onclick="doSearch()">Try Again</button>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('search')" id="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('history')" id="nav-history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>History</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('about')" id="nav-about">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>About</span>
+    </button>
+  </nav>
+</div>
+
+<div class="screen" id="historyScreen">
+  <div class="screen-header">
+    <h2>Search History</h2>
+    <p>Your recent part searches</p>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('search')" id="nav-search-h">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="nav-item active" onclick="showScreen('history')" id="nav-history-h">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>History</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('about')" id="nav-about-h">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>About</span>
+    </button>
+  </nav>
+</div>
+
+<div class="screen" id="aboutScreen">
+  <div class="about-content">
+    <div class="about-logo-wrap">
+      <div class="about-logo">Top <span>Finder</span></div>
+      <div class="about-tagline">Heating parts. Best price. Nearest branch.</div>
+      <div class="about-version">Beta v0.3 &middot; By Top Boiler Care</div>
+    </div>
+    <div class="about-section">
+      <h3>How it works</h3>
+      <div class="about-card">
+        <div class="about-card-title">Live supplier search</div>
+        <div class="about-card-sub">Every search hits multiple UK heating suppliers and returns the public list price plus stock status. Recent searches are cached for an hour to keep things fast.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-title">Postcode for nearest branch</div>
+        <div class="about-card-sub">Add your postcode and Top Finder finds the closest Screwfix and City Plumbing branch to you. Branch lookups are cached per postcode area for a week.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-title">Trade pricing note</div>
+        <div class="about-card-sub">Prices shown are the supplier's public list price. If you have a trade account, your actual price at till may be lower.</div>
+      </div>
+    </div>
+    <div class="about-section">
+      <h3>Suppliers covered</h3>
+      <div class="supplier-status-grid">
+        <div class="supplier-status-item"><div class="status-dot live"></div><div><div class="status-name">Screwfix</div><div class="status-label">Live</div></div></div>
+        <div class="supplier-status-item"><div class="status-dot live"></div><div><div class="status-name">City Plumbing</div><div class="status-label">Live</div></div></div>
+        <div class="supplier-status-item"><div class="status-dot live"></div><div><div class="status-name">BES.co.uk</div><div class="status-label">Live</div></div></div>
+        <div class="supplier-status-item"><div class="status-dot soon"></div><div><div class="status-name">Wolseley</div><div class="status-label">Coming soon</div></div></div>
+        <div class="supplier-status-item"><div class="status-dot soon"></div><div><div class="status-name">HRP</div><div class="status-label">Coming soon</div></div></div>
+        <div class="supplier-status-item"><div class="status-dot soon"></div><div><div class="status-name">More...</div><div class="status-label">In progress</div></div></div>
+      </div>
+    </div>
+    <div class="about-section">
+      <h3>Contact</h3>
+      <div class="about-card">
+        <div class="about-card-title">Top Boiler Care</div>
+        <div class="about-card-sub">Gas Safe registered &middot; East London<br>info@topboilercare.co.uk</div>
+      </div>
+    </div>
+    <div class="by-topboilercare">A project by <a href="https://topboilercare.co.uk">Top Boiler Care</a></div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('search')" id="nav-search-a">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('history')" id="nav-history-a">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>History</span>
+    </button>
+    <button class="nav-item active" onclick="showScreen('about')" id="nav-about-a">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>About</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG - replace with your values when deploying
+// ============================================================
+var SUPABASE_URL = 'https://mexpdmltvnausvupfndc.supabase.co';
+var SUPABASE_ANON_KEY = 'REPLACE_WITH_FRESH_ANON_KEY_AFTER_ROTATION';
+
+var POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+
+// ============================================================
+// STATE
+// ============================================================
+var currentResults = [];
+var currentCached = false;
+var currentOutcode = null;
+var sortByPrice = true;
+var searchHistory = JSON.parse(localStorage.getItem('tf_history') || '[]');
+var savedPostcode = localStorage.getItem('tf_postcode') || '';
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  if (savedPostcode) {
+    document.getElementById('postcodeInput').value = savedPostcode;
+    updatePostcodeStatus();
+  }
+});
+
+// ============================================================
+// SCREEN NAV
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  if (name === 'search') {
+    document.getElementById('searchScreen').classList.add('active');
+    setActive(['nav-search','nav-search-h','nav-search-a']);
+  } else if (name === 'history') {
+    document.getElementById('historyScreen').classList.add('active');
+    setActive(['nav-history','nav-history-h','nav-history-a']);
+    renderHistory();
+  } else if (name === 'about') {
+    document.getElementById('aboutScreen').classList.add('active');
+    setActive(['nav-about','nav-about-h','nav-about-a']);
+  }
+}
+function setActive(ids) { ids.forEach(function(i) { var el = document.getElementById(i); if (el) el.classList.add('active'); }); }
+
+// ============================================================
+// POSTCODE
+// ============================================================
+function getValidPostcode() {
+  var raw = document.getElementById('postcodeInput').value.trim();
+  if (!raw) return null;
+  if (!POSTCODE_RE.test(raw)) return false; // explicitly invalid
+  return raw.toUpperCase();
+}
+function updatePostcodeStatus() {
+  var input = document.getElementById('postcodeInput');
+  var status = document.getElementById('postcodeStatus');
+  var pc = getValidPostcode();
+  input.classList.remove('invalid');
+  if (pc === null) { status.textContent = 'Optional'; status.classList.remove('set'); return; }
+  if (pc === false) { status.textContent = 'Invalid'; status.classList.remove('set'); input.classList.add('invalid'); return; }
+  status.textContent = '✓ Saved'; status.classList.add('set');
+  localStorage.setItem('tf_postcode', pc);
+  savedPostcode = pc;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('postcodeInput').addEventListener('blur', updatePostcodeStatus);
+  document.getElementById('postcodeInput').addEventListener('input', function() {
+    document.getElementById('postcodeInput').classList.remove('invalid');
+  });
+});
+
+// ============================================================
+// SEARCH
+// ============================================================
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  doSearch();
+}
+
+function doSearch() {
+  var query = document.getElementById('searchInput').value.trim();
+  if (!query) { showToast('Enter a part name to search'); return; }
+
+  updatePostcodeStatus();
+  var pc = getValidPostcode();
+  if (pc === false) {
+    showToast('Postcode looks wrong - searching without it');
+  }
+  var postcode = (pc && pc !== false) ? pc : null;
+
+  showLoading(query);
+  animateSuppliers();
+
+  var payload = { query: query };
+  if (postcode) payload.postcode = postcode;
+
+  fetch(SUPABASE_URL + '/functions/v1/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) {
+    if (res.status === 429) throw new Error('RATE_LIMIT');
+    if (!res.ok) throw new Error('Search failed: ' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    currentResults = data.results || [];
+    currentCached = !!data.cached;
+    currentOutcode = data.outcode || null;
+    addToHistory(query, currentResults.length);
+    showResults(query, currentResults);
+  })
+  .catch(function(err) {
+    console.error(err);
+    if (String(err.message) === 'RATE_LIMIT') {
+      showError('Too many searches', 'Wait a minute and try again.');
+    } else {
+      showError('Search failed', 'Could not reach suppliers. Check your connection and try again.');
+    }
+  });
+}
+
+function showLoading(query) {
+  document.getElementById('heroState').style.display = 'none';
+  document.getElementById('loadingState').classList.add('active');
+  document.getElementById('resultsState').classList.remove('active');
+  document.getElementById('errorState').classList.remove('active');
+  document.getElementById('loadingQuery').textContent = '"' + query + '"';
+  document.getElementById('searchBtn').disabled = true;
+}
+
+function animateSuppliers() {
+  var ids = ['ls-screwfix','ls-cityplumbing','ls-bes'];
+  ids.forEach(function(id) { document.getElementById(id).className = 'loading-supplier'; });
+  ids.forEach(function(id, i) {
+    setTimeout(function() { document.getElementById(id).classList.add('scanning'); }, i * 600);
+    setTimeout(function() {
+      document.getElementById(id).classList.remove('scanning');
+      document.getElementById(id).classList.add('done');
+    }, i * 600 + 1200);
+  });
+}
+
+function showResults(query, results) {
+  document.getElementById('loadingState').classList.remove('active');
+  document.getElementById('errorState').classList.remove('active');
+  document.getElementById('resultsState').classList.add('active');
+  document.getElementById('searchBtn').disabled = false;
+
+  if (results.length === 0) {
+    document.getElementById('resultsCount').innerHTML = 'No results for <strong>"' + escHtml(query) + '"</strong>';
+    document.getElementById('resultsList').innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No parts found</div><div class="empty-sub">Try a different search term or part number</div></div>';
+    return;
+  }
+  renderResults(results);
+}
+
+function renderResults(results) {
+  var sorted = results.slice().sort(function(a, b) {
+    if (sortByPrice) return (a.price ?? 9999) - (b.price ?? 9999);
+    return (b.price ?? 0) - (a.price ?? 0);
+  });
+  var bestPrice = sorted[0] ? sorted[0].price : null;
+
+  var meta = '<strong>' + sorted.length + ' results</strong>';
+  if (currentCached) meta += '<span class="cache-badge">Cached</span>';
+  if (currentOutcode) meta += '<span class="outcode-badge">Near ' + escHtml(currentOutcode) + '</span>';
+  document.getElementById('resultsCount').innerHTML = meta;
+  document.getElementById('sortBtn').textContent = 'Sort: Price ' + (sortByPrice ? '↑' : '↓');
+
+  var html = '';
+  sorted.forEach(function(r, i) {
+    var isBest = r.price === bestPrice && i === 0;
+    var priceClass = isBest ? 'result-price green' : 'result-price';
+    var cardClass = isBest ? 'result-card best-price' : 'result-card';
+    var imgHtml = r.image_url
+      ? '<div class="result-image"><img src="' + escHtml(r.image_url) + '" alt="" loading="lazy" onerror="this.parentNode.outerHTML=\'' + supplierFallback(r.supplier).replace(/'/g,'\\\'') + '\'"></div>'
+      : supplierFallback(r.supplier);
+
+    html += '<a href="' + escHtml(r.product_url || '#') + '" target="_blank" rel="noopener" class="' + cardClass + '">';
+    html += imgHtml;
+    html += '<div class="result-body">';
+    html += '<div class="result-supplier-name">' + escHtml(r.supplier) + '</div>';
+    html += '<div class="result-product-name">' + escHtml(r.product_name) + '</div>';
+    html += '<div class="result-tags">';
+    if (isBest) html += '<span class="tag tag-best">Best price</span>';
+    html += r.in_stock ? '<span class="tag tag-stock">In stock</span>' : '<span class="tag tag-nostock">Out of stock</span>';
+    if (r.nearest_branch && r.nearest_branch.distance_label) {
+      html += '<span class="tag tag-branch">' + escHtml(r.nearest_branch.branch_name) + ' &middot; ' + escHtml(r.nearest_branch.distance_label) + '</span>';
+    } else if (r.delivery) {
+      html += '<span class="tag tag-delivery">' + escHtml(r.delivery) + '</span>';
+    }
+    html += '</div></div>';
+    html += '<div class="result-price-col">';
+    html += '<span class="' + priceClass + '">' + (r.price ? '£' + r.price.toFixed(2) : '—') + '</span>';
+    html += '<div class="result-arrow">→</div>';
+    html += '</div></a>';
+  });
+  document.getElementById('resultsList').innerHTML = html;
+}
+
+function supplierFallback(supplier) {
+  var styles = {
+    'Screwfix':'background:#003473;color:#fff;',
+    'City Plumbing':'background:#e30613;color:#fff;',
+    'BES':'background:#00843d;color:#fff;',
+    'Wolseley':'background:#1a1a2e;color:#f5c518;border:1px solid rgba(245,197,24,0.2);',
+    'HRP':'background:#1a1a2e;color:#f5c518;border:1px solid rgba(245,197,24,0.2);'
+  };
+  var codes = { 'Screwfix':'SFX','City Plumbing':'CP','BES':'BES','Wolseley':'WOL','HRP':'HRP' };
+  var code = codes[supplier] || supplier.substring(0,3).toUpperCase();
+  var style = styles[supplier] || 'background:#333;color:#fff;';
+  return '<div class="result-image-fallback" style="' + style + '">' + code + '</div>';
+}
+
+function toggleSort() { sortByPrice = !sortByPrice; renderResults(currentResults); }
+
+function showError(title, msg) {
+  document.getElementById('loadingState').classList.remove('active');
+  document.getElementById('resultsState').classList.remove('active');
+  document.getElementById('errorState').classList.add('active');
+  document.getElementById('errorTitle').textContent = title || 'Search failed';
+  document.getElementById('errorMsg').textContent = msg || 'Something went wrong. Please try again.';
+  document.getElementById('searchBtn').disabled = false;
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function addToHistory(query, count) {
+  searchHistory = searchHistory.filter(function(h) { return h.query !== query; });
+  searchHistory.unshift({ query: query, count: count, time: Date.now() });
+  if (searchHistory.length > 20) searchHistory = searchHistory.slice(0, 20);
+  localStorage.setItem('tf_history', JSON.stringify(searchHistory));
+}
+function renderHistory() {
+  var list = document.getElementById('historyList');
+  if (searchHistory.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🕐</div><div class="empty-title">No searches yet</div><div class="empty-sub">Your recent searches will appear here</div></div>';
+    return;
+  }
+  var html = '';
+  searchHistory.forEach(function(h) {
+    var ago = timeAgo(h.time);
+    html += '<div class="history-item" onclick="loadHistorySearch(\'' + escAttr(h.query) + '\')">';
+    html += '<div><div class="history-query">' + escHtml(h.query) + '</div>';
+    html += '<div class="history-time">' + ago + ' &middot; ' + h.count + ' results</div></div>';
+    html += '<div class="history-arrow">→</div></div>';
+  });
+  list.innerHTML = html;
+}
+function loadHistorySearch(query) {
+  showScreen('search');
+  document.getElementById('searchInput').value = query;
+  doSearch();
+}
+function timeAgo(ts) {
+  var diff = (Date.now() - ts) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+// ============================================================
+// UTIL
+// ============================================================
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+document.getElementById('searchInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+document.getElementById('postcodeInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') { updatePostcodeStatus(); doSearch(); } });
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  setTimeout(function() { showToast('Add Top Finder to your home screen for quick access'); }, 3000);
+});
+</script>
+</body>
+</html>
