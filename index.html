@@ -94,6 +94,12 @@ h1,h2,h3,h4 { font-family:'Plus Jakarta Sans',sans-serif; line-height:1.15; }
 .outcode-badge { display:inline-block; margin-left:8px; font-size:0.68rem; padding:2px 8px; border-radius:100px; background:var(--yellow-dim); color:var(--yellow); border:1px solid rgba(245,197,24,0.2); font-weight:600; }
 .sort-btn { background:var(--black-card); border:1px solid rgba(255,255,255,0.08); color:var(--gray-400); padding:6px 12px; border-radius:8px; font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all var(--transition); }
 .sort-btn:hover { border-color:var(--yellow); color:var(--yellow); }
+.back-btn { background:var(--black-card); border:1px solid rgba(255,255,255,0.08); color:var(--gray-400); padding:6px 10px 6px 8px; border-radius:8px; font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all var(--transition); display:inline-flex; align-items:center; gap:4px; }
+.back-btn:hover { border-color:var(--yellow); color:var(--yellow); }
+.back-btn svg { width:14px; height:14px; }
+.results-meta-left { display:flex; align-items:center; gap:8px; flex:1; min-width:0; }
+.cancel-btn { margin-top:20px; background:transparent; border:1px solid rgba(255,255,255,0.15); color:var(--gray-400); padding:10px 22px; border-radius:var(--radius); font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.85rem; transition:all var(--transition); }
+.cancel-btn:hover { border-color:var(--red); color:var(--red); }
 
 .results-list { padding:12px 16px; flex:1; overflow-y:auto; }
 .result-card { background:var(--black-card); border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius-lg); padding:14px; margin-bottom:10px; display:flex; gap:14px; align-items:center; transition:all var(--transition); cursor:pointer; text-decoration:none; color:inherit; }
@@ -232,11 +238,18 @@ h1,h2,h3,h4 { font-family:'Plus Jakarta Sans',sans-serif; line-height:1.15; }
       <div class="loading-supplier" id="ls-cityplumbing">City Plumbing</div>
       <div class="loading-supplier" id="ls-bes">BES</div>
     </div>
+    <button class="cancel-btn" onclick="cancelSearch()">Cancel</button>
   </div>
 
   <div class="results-state" id="resultsState">
     <div class="results-meta">
-      <div class="results-count" id="resultsCount">0 results</div>
+      <div class="results-meta-left">
+        <button class="back-btn" onclick="clearSearch()" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <div class="results-count" id="resultsCount">0 results</div>
+      </div>
       <button class="sort-btn" id="sortBtn" onclick="toggleSort()">Sort: Price ↑</button>
     </div>
     <div class="results-list" id="resultsList"></div>
@@ -246,7 +259,10 @@ h1,h2,h3,h4 { font-family:'Plus Jakarta Sans',sans-serif; line-height:1.15; }
     <div class="error-icon">⚠️</div>
     <div class="error-title" id="errorTitle">Search failed</div>
     <div class="error-sub" id="errorMsg">Something went wrong. Please try again.</div>
-    <button class="retry-btn" onclick="doSearch()">Try Again</button>
+    <div style="display:flex; gap:10px;">
+      <button class="cancel-btn" onclick="clearSearch()">Back</button>
+      <button class="retry-btn" onclick="doSearch()">Try Again</button>
+    </div>
   </div>
 
   <nav class="bottom-nav">
@@ -352,7 +368,7 @@ h1,h2,h3,h4 { font-family:'Plus Jakarta Sans',sans-serif; line-height:1.15; }
 // CONFIG - replace with your values when deploying
 // ============================================================
 var SUPABASE_URL = 'https://mexpdmltvnausvupfndc.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1leHBkbWx0dm5hdXN2dXBmbmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkzNDAsImV4cCI6MjA5MzA0NTM0MH0.Un9InuCnNZSo55180CKtK73S6KVr4gX1ISWgiSz29Ec';
+var SUPABASE_ANON_KEY = 'REPLACE_WITH_FRESH_ANON_KEY_AFTER_ROTATION';
 
 var POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 
@@ -365,6 +381,7 @@ var currentOutcode = null;
 var sortByPrice = true;
 var searchHistory = JSON.parse(localStorage.getItem('tf_history') || '[]');
 var savedPostcode = localStorage.getItem('tf_postcode') || '';
+var currentAbortController = null;
 
 // ============================================================
 // INIT
@@ -442,6 +459,10 @@ function doSearch() {
   }
   var postcode = (pc && pc !== false) ? pc : null;
 
+  // Abort any in-flight search before starting a new one
+  if (currentAbortController) currentAbortController.abort();
+  currentAbortController = new AbortController();
+
   showLoading(query);
   animateSuppliers();
 
@@ -451,10 +472,12 @@ function doSearch() {
   fetch(SUPABASE_URL + '/functions/v1/search', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: currentAbortController.signal
   })
   .then(function(res) {
     if (res.status === 429) throw new Error('RATE_LIMIT');
+    if (res.status === 401) throw new Error('AUTH_FAIL');
     if (!res.ok) throw new Error('Search failed: ' + res.status);
     return res.json();
   })
@@ -466,13 +489,35 @@ function doSearch() {
     showResults(query, currentResults);
   })
   .catch(function(err) {
+    if (err && err.name === 'AbortError') return; // user cancelled
     console.error(err);
     if (String(err.message) === 'RATE_LIMIT') {
       showError('Too many searches', 'Wait a minute and try again.');
+    } else if (String(err.message) === 'AUTH_FAIL') {
+      showError('Auth error', 'The app is not authorised to talk to the server. The anon key in this page is wrong or has been rotated. Update it and re-deploy.');
     } else {
       showError('Search failed', 'Could not reach suppliers. Check your connection and try again.');
     }
   });
+}
+
+function cancelSearch() {
+  if (currentAbortController) currentAbortController.abort();
+  clearSearch();
+}
+
+function clearSearch() {
+  if (currentAbortController) currentAbortController.abort();
+  currentResults = [];
+  currentCached = false;
+  currentOutcode = null;
+  document.getElementById('searchInput').value = '';
+  document.getElementById('loadingState').classList.remove('active');
+  document.getElementById('resultsState').classList.remove('active');
+  document.getElementById('errorState').classList.remove('active');
+  document.getElementById('heroState').style.display = 'flex';
+  document.getElementById('searchBtn').disabled = false;
+  document.getElementById('searchInput').focus();
 }
 
 function showLoading(query) {
@@ -629,8 +674,19 @@ function showToast(msg) {
   setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 
-document.getElementById('searchInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+  if (e.key === 'Escape') clearSearch();
+});
 document.getElementById('postcodeInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') { updatePostcodeStatus(); doSearch(); } });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var loading = document.getElementById('loadingState').classList.contains('active');
+    var results = document.getElementById('resultsState').classList.contains('active');
+    var error = document.getElementById('errorState').classList.contains('active');
+    if (loading || results || error) clearSearch();
+  }
+});
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   setTimeout(function() { showToast('Add Top Finder to your home screen for quick access'); }, 3000);
