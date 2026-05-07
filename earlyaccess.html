@@ -585,16 +585,6 @@ footer { background: var(--black); color: var(--gray-400); padding: 48px 0 32px;
               <option>No, other trade</option>
             </select>
           </div>
-          <div class="signup-field">
-            <label>Jobs per week?</label>
-            <select id="sJobs">
-              <option value="">Select...</option>
-              <option>1-5 jobs</option>
-              <option>6-15 jobs</option>
-              <option>16-30 jobs</option>
-              <option>30+ jobs</option>
-            </select>
-          </div>
         </div>
         <div class="signup-field" style="margin-bottom:16px;">
           <label>Supplier you use most?</label>
@@ -797,7 +787,6 @@ function submitSignup() {
       name: name || null,
       email: email,
       gas_safe: gasSafe || null,
-      jobs_per_week: jobs || null,
       primary_supplier: supplier || null
     })
   })
