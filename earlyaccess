@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Finder | Find Any Heating Part. Cheapest. Nearest. Instantly.</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #0a0a0a;
+  --black-light: #141414;
+  --black-card: #1a1a1a;
+  --yellow: #f5c518;
+  --yellow-hover: #ffd740;
+  --yellow-dim: rgba(245, 197, 24, 0.08);
+  --blue: #2d7ff9;
+  --white: #ffffff;
+  --gray-100: #f5f5f5;
+  --gray-200: #e0e0e0;
+  --gray-400: #9e9e9e;
+  --gray-600: #6b6b6b;
+  --gray-800: #333333;
+  --green: #4ade80;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.12);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--gray-800);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.15; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* EARLY ACCESS BANNER */
+.early-banner {
+  background: var(--yellow);
+  padding: 10px 24px;
+  text-align: center;
+  position: sticky; top: 0; z-index: 200;
+}
+.early-banner-inner {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.early-banner strong {
+  font-weight: 700; color: var(--black); font-size: 0.88rem;
+}
+.early-banner span {
+  color: rgba(0,0,0,0.65); font-size: 0.85rem;
+}
+.early-banner a {
+  background: var(--black); color: var(--yellow);
+  padding: 4px 14px; border-radius: 100px;
+  font-size: 0.78rem; font-weight: 700; text-decoration: none;
+  transition: opacity var(--transition);
+}
+.early-banner a:hover { opacity: 0.85; }
+
+/* NAV */
+nav {
+  position: sticky; top: 38px; z-index: 100;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(245,197,24,0.1);
+}
+nav .container {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 1.25rem; color: var(--white);
+  letter-spacing: -0.02em;
+}
+.logo span { color: var(--yellow); }
+.logo-beta {
+  font-size: 0.6rem; font-weight: 700; background: var(--yellow);
+  color: var(--black); padding: 2px 6px; border-radius: 4px;
+  margin-left: 6px; vertical-align: middle; letter-spacing: 0.05em;
+}
+nav ul { display: flex; gap: 28px; list-style: none; }
+nav ul li a {
+  color: var(--gray-400); text-decoration: none; font-size: 0.9rem;
+  font-weight: 500; transition: color var(--transition);
+}
+nav ul li a:hover { color: var(--white); }
+.nav-cta {
+  background: var(--yellow); color: var(--black); border: none;
+  padding: 10px 22px; border-radius: var(--radius); font-weight: 600;
+  font-size: 0.9rem; cursor: pointer; transition: all var(--transition);
+  font-family: 'DM Sans', sans-serif; text-decoration: none;
+  display: inline-block;
+}
+.nav-cta:hover { background: var(--yellow-hover); transform: translateY(-1px); }
+
+/* HERO */
+.hero {
+  background: var(--black);
+  padding: 100px 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -40%; right: -20%;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(245,197,24,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -30%; left: -10%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(45,127,249,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero .container { position: relative; z-index: 1; }
+
+/* EARLY ACCESS CALLOUT in hero */
+.early-callout {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(245,197,24,0.06);
+  border: 1px solid rgba(245,197,24,0.25);
+  padding: 10px 18px; border-radius: 100px;
+  margin-bottom: 28px;
+}
+.early-callout-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(245,197,24,0.2);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(245,197,24,0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(245,197,24,0.05); }
+}
+.early-callout span {
+  font-size: 0.85rem; color: var(--yellow); font-weight: 600;
+}
+.early-callout em {
+  font-style: normal; color: var(--gray-600); font-size: 0.82rem;
+  padding-left: 8px; border-left: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  color: var(--white); max-width: 780px;
+  letter-spacing: -0.03em; margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--yellow), var(--yellow-hover));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 1.15rem; color: var(--gray-400);
+  max-width: 540px; margin-bottom: 36px; line-height: 1.7;
+}
+
+/* SEARCH DEMO */
+.search-demo {
+  background: var(--black-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  display: flex; align-items: center; gap: 8px;
+  max-width: 580px; margin-bottom: 16px;
+}
+.search-demo input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--white); font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; padding: 10px 14px;
+}
+.search-demo input::placeholder { color: var(--gray-600); }
+.search-demo button {
+  background: var(--yellow); color: var(--black); border: none;
+  padding: 12px 24px; border-radius: var(--radius); font-weight: 700;
+  font-size: 0.95rem; cursor: pointer; transition: all var(--transition);
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+}
+.search-demo button:hover { background: var(--yellow-hover); }
+
+.search-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+.search-tag {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 0.82rem; color: var(--gray-400);
+  cursor: pointer; transition: all var(--transition);
+}
+.search-tag:hover, .search-tag.active {
+  border-color: rgba(245,197,24,0.4); color: var(--yellow);
+  background: var(--yellow-dim);
+}
+
+/* MOCK RESULTS */
+.mock-results {
+  background: var(--black-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  overflow: hidden; max-width: 660px; margin-bottom: 48px;
+}
+.mock-results-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mock-results-header span { font-size: 0.85rem; color: var(--gray-400); }
+.mock-results-header strong { color: var(--yellow); }
+.result-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background var(--transition);
+}
+.result-row:last-child { border-bottom: none; }
+.result-row:hover { background: rgba(255,255,255,0.02); }
+.result-row { animation: fadeIn 0.3s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.supplier-badge {
+  width: 38px; height: 38px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 800; flex-shrink: 0; letter-spacing: 0.03em;
+}
+.badge-sfx { background: #003473; color: #fff; }
+.badge-cp { background: #e30613; color: #fff; }
+.badge-bes { background: #00843d; color: #fff; }
+.badge-hrp { background: #1a1a2e; color: var(--yellow); border: 1px solid rgba(245,197,24,0.2); }
+.result-info { flex: 1; }
+.result-name { font-size: 0.88rem; color: var(--white); font-weight: 500; margin-bottom: 3px; }
+.result-meta { font-size: 0.75rem; color: var(--gray-600); display: flex; gap: 10px; }
+.result-price {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem; font-weight: 800; color: var(--yellow); flex-shrink: 0;
+}
+.result-price.best { color: var(--green); }
+.best-tag {
+  font-size: 0.65rem; font-weight: 700;
+  background: rgba(74,222,128,0.12); color: var(--green);
+  border-radius: 100px; padding: 2px 7px; margin-left: 6px; vertical-align: middle;
+}
+.stock-yes { color: var(--green); }
+.stock-no { color: var(--gray-600); }
+
+.hero-stats {
+  display: flex; gap: 48px; margin-top: 8px;
+  padding-top: 36px; border-top: 1px solid rgba(255,255,255,0.07);
+}
+.hero-stat-number {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2rem; font-weight: 800; color: var(--yellow);
+}
+.hero-stat-label { font-size: 0.85rem; color: var(--gray-600); margin-top: 4px; }
+
+/* HOW IT WORKS */
+.how-it-works { background: var(--gray-100); padding: 96px 0; }
+.section-tag {
+  display: inline-block; font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--blue); margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  color: var(--black); letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.section-subtitle { font-size: 1.05rem; color: var(--gray-600); max-width: 560px; line-height: 1.7; }
+.section-header { margin-bottom: 56px; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.step-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 36px 28px;
+  position: relative; overflow: hidden; transition: all var(--transition);
+}
+.step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--yellow); }
+.step-number {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 4rem; font-weight: 800;
+  color: rgba(245,197,24,0.1); position: absolute; top: 16px; right: 20px; line-height: 1;
+}
+.step-icon {
+  width: 48px; height: 48px; border-radius: 12px; background: var(--yellow-dim);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+}
+.step-icon svg { width: 22px; height: 22px; color: var(--yellow); }
+.step-card h3 { font-size: 1.1rem; color: var(--black); margin-bottom: 10px; }
+.step-card p { font-size: 0.92rem; color: var(--gray-600); line-height: 1.7; }
+
+/* SUPPLIERS */
+.suppliers { background: var(--white); padding: 96px 0; }
+.suppliers .section-header { text-align: center; margin-bottom: 48px; }
+.supplier-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px; max-width: 860px; margin: 0 auto 48px;
+}
+.supplier-card {
+  background: var(--gray-100); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 28px 20px;
+  text-align: center; transition: all var(--transition);
+}
+.supplier-card:hover { border-color: var(--yellow); transform: translateY(-3px); box-shadow: var(--shadow); }
+.supplier-logo-circle {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px; font-weight: 800; font-size: 0.7rem; letter-spacing: 0.05em;
+}
+.supplier-card h3 { font-size: 0.95rem; color: var(--black); margin-bottom: 4px; }
+.supplier-card p { font-size: 0.82rem; color: var(--gray-600); }
+.more-suppliers { text-align: center; font-size: 0.9rem; color: var(--gray-600); }
+.more-suppliers strong { color: var(--black); }
+
+/* SIGNUP */
+.signup { background: var(--black); padding: 96px 0; }
+.signup-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+.signup .section-tag { color: var(--yellow); }
+.signup .section-title { color: var(--white); }
+.signup .section-subtitle { color: var(--gray-400); margin: 0 auto 36px; }
+
+/* EARLY ACCESS BADGE in signup */
+.early-access-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.25);
+  padding: 8px 18px; border-radius: 100px; margin-bottom: 20px;
+}
+.early-access-badge span { font-size: 0.82rem; color: var(--yellow); font-weight: 600; }
+.early-access-badge em { font-style: normal; font-size: 0.78rem; color: var(--gray-600); }
+
+.signup-form {
+  background: var(--black-card); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg); padding: 36px;
+}
+.signup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.signup-field { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.signup-field label {
+  font-size: 0.78rem; font-weight: 700; color: var(--gray-400);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.signup-field input, .signup-field select {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius); padding: 12px 16px;
+  color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  transition: border-color var(--transition);
+}
+.signup-field input::placeholder { color: var(--gray-600); }
+.signup-field input:focus, .signup-field select:focus {
+  outline: none; border-color: rgba(245,197,24,0.4);
+  box-shadow: 0 0 0 3px rgba(245,197,24,0.06);
+}
+.signup-field select { appearance: none; -webkit-appearance: none; color: var(--gray-400); }
+.signup-field select option { background: var(--black-card); color: var(--white); }
+.signup-submit {
+  width: 100%; background: var(--yellow); color: var(--black); border: none;
+  padding: 16px; border-radius: var(--radius); font-weight: 700; font-size: 1rem;
+  cursor: pointer; transition: all var(--transition); font-family: 'DM Sans', sans-serif;
+  margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.signup-submit:hover { background: var(--yellow-hover); transform: translateY(-1px); }
+.signup-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.signup-privacy { font-size: 0.78rem; color: var(--gray-600); margin-top: 14px; text-align: center; }
+.signup-error { color: #f87171; font-size: 0.82rem; margin-top: 10px; display: none; }
+
+.signup-success { display: none; text-align: center; padding: 40px 0; }
+.signup-success-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(245,197,24,0.1);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+}
+.signup-success h3 { font-size: 1.3rem; color: var(--white); margin-bottom: 10px; }
+.signup-success p { font-size: 0.92rem; color: var(--gray-400); line-height: 1.7; }
+
+/* TRUST BAR */
+.trust-bar {
+  background: var(--black); border-top: 1px solid rgba(255,255,255,0.06); padding: 24px 0;
+}
+.trust-bar-inner { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; }
+.trust-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--gray-400); }
+.trust-item svg { color: var(--yellow); }
+
+/* FOOTER */
+footer { background: var(--black); color: var(--gray-400); padding: 48px 0 32px; border-top: 1px solid rgba(255,255,255,0.06); }
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px; padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.footer-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--white); }
+.footer-logo span { color: var(--yellow); }
+.footer-tagline { font-size: 0.82rem; color: var(--gray-600); margin-top: 4px; }
+.footer-links { display: flex; gap: 24px; list-style: none; }
+.footer-links a { color: var(--gray-400); text-decoration: none; font-size: 0.88rem; transition: color var(--transition); }
+.footer-links a:hover { color: var(--white); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px; padding-top: 24px; font-size: 0.82rem; color: var(--gray-600);
+}
+
+@media (max-width: 900px) {
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .supplier-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  nav ul { display: none; }
+  .hero { padding: 72px 0 60px; }
+  .hero h1 { font-size: 2.2rem; }
+  .hero p { font-size: 1rem; }
+  .hero-stats { gap: 28px; flex-wrap: wrap; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .supplier-grid { grid-template-columns: repeat(2, 1fr); }
+  .signup-row { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; text-align: center; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .trust-bar-inner { gap: 20px; }
+  .mock-results { display: none; }
+  .early-banner span { display: none; }
+  nav { top: 34px; }
+}
+</style>
+</head>
+<body>
+
+<!-- EARLY ACCESS BANNER -->
+<div class="early-banner">
+  <div class="early-banner-inner">
+    <strong>🚧 Early Access</strong>
+    <span>Top Finder is currently in development. Sign up to be first when we launch.</span>
+    <a href="#signup">Join the list &rarr;</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="logo">Top <span>Finder</span><span class="logo-beta">BETA</span></div>
+    <ul>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#suppliers">Suppliers</a></li>
+      <li><a href="#signup">Early Access</a></li>
+    </ul>
+    <a class="nav-cta" href="#signup">Get Early Access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+
+    <div class="early-callout">
+      <div class="early-callout-dot"></div>
+      <span>Now in development</span>
+      <em>Sign up for free early access</em>
+    </div>
+
+    <h1>Find any heating part.<br><em>Cheapest. Nearest. Instantly.</em></h1>
+    <p>Stop tabbing between Screwfix, City Plumbing and Wolseley. Top Finder searches every major UK heating supplier at once and shows you the best price and nearest stock in seconds.</p>
+
+    <div class="search-demo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="demoSearch" placeholder="e.g. Ideal Logic heat exchanger, Honeywell zone valve..." readonly>
+      <button onclick="runDemo()">Search</button>
+    </div>
+
+    <div class="search-tags">
+      <span class="search-tag" onclick="setSearch(this)" data-key="honeywell">Honeywell zone valve</span>
+      <span class="search-tag" onclick="setSearch(this)" data-key="worcester">Worcester Bosch pump</span>
+      <span class="search-tag" onclick="setSearch(this)" data-key="ideal">Ideal Logic heat exchanger</span>
+      <span class="search-tag" onclick="setSearch(this)" data-key="compression">15mm compression fitting</span>
+      <span class="search-tag" onclick="setSearch(this)" data-key="vaillant">Vaillant PCB</span>
+    </div>
+
+    <div class="mock-results" id="mockResults" style="display:none;">
+      <div class="mock-results-header">
+        <span>Results for <strong id="searchTerm"></strong></span>
+        <span style="color:var(--gray-600); font-size:0.75rem;">Sorted: cheapest first</span>
+      </div>
+      <div id="mockRows"></div>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-number">6+</div>
+        <div class="hero-stat-label">Suppliers searched at once</div>
+      </div>
+      <div>
+        <div class="hero-stat-number">&lt;30s</div>
+        <div class="hero-stat-label">Per live search</div>
+      </div>
+      <div>
+        <div class="hero-stat-number">Free</div>
+        <div class="hero-stat-label">During early access</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Simple by design</span>
+      <h2 class="section-title">How Top Finder works</h2>
+      <p class="section-subtitle">Three steps. No accounts needed at the suppliers. No calls to branches.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>Search any part</h3>
+        <p>Type the part name, model number, or boiler make. Our matching engine finds it across all suppliers even when they list it differently.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h3>See price and stock near you</h3>
+        <p>Results show the price, distance to the nearest branch with stock, and delivery options. Sort by cheapest or nearest.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        <h3>Go get it or order online</h3>
+        <p>One tap takes you straight to the supplier. No middleman, no markup. You buy direct as you always have.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPLIERS -->
+<section class="suppliers" id="suppliers">
+  <div class="container">
+    <div class="section-header" style="text-align:center;">
+      <span class="section-tag">Coverage</span>
+      <h2 class="section-title">Suppliers we search</h2>
+      <p class="section-subtitle" style="margin:0 auto;">All major UK heating and plumbing merchants, searched simultaneously.</p>
+    </div>
+    <div class="supplier-grid">
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#003473;color:#fff;">SFX</div><h3>Screwfix</h3><p>800+ UK branches</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#e30613;color:#fff;">CP</div><h3>City Plumbing</h3><p>400+ UK branches</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#0a0a0a;color:var(--yellow);border:1px solid rgba(245,197,24,0.2);">WOL</div><h3>Wolseley</h3><p>480+ UK branches</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#00843d;color:#fff;">BES</div><h3>BES.co.uk</h3><p>Online + next day</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#1a1a2e;color:var(--yellow);border:1px solid rgba(245,197,24,0.15);">HRP</div><h3>HRP</h3><p>Heating parts specialist</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#f0a500;color:#fff;">TF</div><h3>Trade Facilities</h3><p>Online delivery</p></div>
+      <div class="supplier-card"><div class="supplier-logo-circle" style="background:#2d7ff9;color:#fff;">EX</div><h3>Exhaust Manifold</h3><p>Gas parts specialist</p></div>
+      <div class="supplier-card" style="border-style:dashed;"><div class="supplier-logo-circle" style="background:var(--gray-100);color:var(--gray-400);">+</div><h3 style="color:var(--gray-600);">More coming</h3><p>Local merchants next</p></div>
+    </div>
+    <div class="more-suppliers"><strong>Local independent merchants</strong> on our roadmap. <a href="#signup" style="color:var(--blue);text-decoration:none;font-weight:600;">Suggest one &rarr;</a></div>
+  </div>
+</section>
+
+<!-- SIGNUP -->
+<section class="signup" id="signup">
+  <div class="container">
+    <div class="signup-inner">
+      <div class="early-access-badge">
+        <span>🚧 Early Access</span>
+        <em>Free for founding members</em>
+      </div>
+      <span class="section-tag" style="display:block;">Join the waitlist</span>
+      <h2 class="section-title">Be first in line</h2>
+      <p class="section-subtitle">Top Finder is being built right now. Sign up and get free access at launch, plus a direct say in what features we build first.</p>
+
+      <div class="signup-form" id="signupForm">
+        <div class="signup-row">
+          <div class="signup-field">
+            <label>Your name</label>
+            <input type="text" id="sName" placeholder="John Smith">
+          </div>
+          <div class="signup-field">
+            <label>Email address *</label>
+            <input type="email" id="sEmail" placeholder="john@email.com">
+          </div>
+        </div>
+        <div class="signup-row">
+          <div class="signup-field">
+            <label>Gas Safe registered?</label>
+            <select id="sGasSafe">
+              <option value="">Select...</option>
+              <option>Yes, Gas Safe registered</option>
+              <option>No, but I work in plumbing/heating</option>
+              <option>No, other trade</option>
+            </select>
+          </div>
+          <div class="signup-field">
+            <label>Jobs per week?</label>
+            <select id="sJobs">
+              <option value="">Select...</option>
+              <option>1-5 jobs</option>
+              <option>6-15 jobs</option>
+              <option>16-30 jobs</option>
+              <option>30+ jobs</option>
+            </select>
+          </div>
+        </div>
+        <div class="signup-field" style="margin-bottom:16px;">
+          <label>Supplier you use most?</label>
+          <select id="sSupplier">
+            <option value="">Select...</option>
+            <option>Screwfix</option>
+            <option>City Plumbing</option>
+            <option>Wolseley</option>
+            <option>BES.co.uk</option>
+            <option>HRP</option>
+            <option>Mix of all of them</option>
+          </select>
+        </div>
+        <button class="signup-submit" id="submitBtn" onclick="submitSignup()">
+          Get Early Access &rarr;
+        </button>
+        <div class="signup-error" id="signupError"></div>
+        <p class="signup-privacy">No spam. No data sold. Just your launch notification and free early access.</p>
+      </div>
+
+      <div class="signup-success" id="signupSuccess">
+        <div class="signup-success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f5c518" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>You're on the list.</h3>
+        <p>We'll be in touch when Top Finder launches. Keep an eye on your inbox.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="trust-bar-inner">
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Built by engineers, for engineers</div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Free during early access</div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>No data sold. Ever.</div>
+      <div class="trust-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>UK-only, UK-focused</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Top <span>Finder</span></div>
+        <div class="footer-tagline">A project by Top Boiler Care</div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#suppliers">Suppliers</a></li>
+        <li><a href="#signup">Early Access</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Top Finder. All rights reserved.</span>
+      <span>Based in London</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONFIG - replace with your real Supabase credentials
+// ============================================================
+var SUPABASE_URL = 'https://mexpdmltvnausvupfndc.supabase.co';
+var SUPABASE_ANON_KEY = 'REPLACE_WITH_FRESH_ANON_KEY_AFTER_ROTATION';
+
+// ============================================================
+// MOCK RESULTS DATA - unique per search tag
+// ============================================================
+var MOCK_DATA = {
+  honeywell: {
+    label: 'Honeywell zone valve',
+    rows: [
+      { badge: 'badge-sfx', code: 'SFX', name: 'Honeywell V4043H 2-Port Zone Valve 22mm', meta: '0.8 mi · Screwfix Bethnal Green', stock: true, best: true, price: '£86.38' },
+      { badge: 'badge-cp',  code: 'CP',  name: 'Honeywell Home V4043H 2-Port Motorised Valve', meta: '1.2 mi · City Plumbing Stratford', stock: true, best: false, price: '£91.50' },
+      { badge: 'badge-bes', code: 'BES', name: 'Honeywell V4043H Zone Valve 22mm Compression', meta: 'Online · Next day delivery', stock: true, best: false, price: '£94.00' },
+      { badge: 'badge-hrp', code: 'HRP', name: 'Honeywell V4073A 3-Port Valve 22mm', meta: 'Online · 2-3 days', stock: false, best: false, price: '£119.99' }
+    ]
+  },
+  worcester: {
+    label: 'Worcester Bosch pump',
+    rows: [
+      { badge: 'badge-bes', code: 'BES', name: 'Worcester Bosch 87161408020 Central Heating Pump', meta: 'Online · Next day delivery', stock: true, best: true, price: '£44.20' },
+      { badge: 'badge-hrp', code: 'HRP', name: 'Worcester Bosch Pump Assembly 87161408020', meta: 'Online · 1-2 days', stock: true, best: false, price: '£47.99' },
+      { badge: 'badge-sfx', code: 'SFX', name: 'Wilo Yonos Para 15/6 Circulation Pump (compatible)', meta: '0.8 mi · Screwfix Bow', stock: true, best: false, price: '£52.99' },
+      { badge: 'badge-cp',  code: 'CP',  name: 'Grundfos UPS2 15-50/60 Circulator Pump', meta: '2.1 mi · City Plumbing Hackney', stock: false, best: false, price: '£68.00' }
+    ]
+  },
+  ideal: {
+    label: 'Ideal Logic heat exchanger',
+    rows: [
+      { badge: 'badge-hrp', code: 'HRP', name: 'Ideal Logic Heat Exchanger 170996', meta: 'Online · Next day delivery', stock: true, best: true, price: '£112.40' },
+      { badge: 'badge-bes', code: 'BES', name: 'Ideal Logic Plate Heat Exchanger 170996', meta: 'Online · Next day delivery', stock: true, best: false, price: '£118.00' },
+      { badge: 'badge-cp',  code: 'CP',  name: 'Ideal Logic+ Heat Exchanger Assembly', meta: '1.2 mi · City Plumbing Stratford', stock: false, best: false, price: '£134.50' },
+      { badge: 'badge-sfx', code: 'SFX', name: 'Ideal Boilers Heat Exchanger Kit', meta: '0.8 mi · Screwfix Bethnal Green', stock: false, best: false, price: '£149.99' }
+    ]
+  },
+  compression: {
+    label: '15mm compression fitting',
+    rows: [
+      { badge: 'badge-sfx', code: 'SFX', name: 'Pegler Tectite Sprint 15mm Push-Fit Straight Coupler (10pk)', meta: '0.4 mi · Screwfix Mile End', stock: true, best: true, price: '£4.29' },
+      { badge: 'badge-sfx', code: 'SFX', name: 'Compression Straight Coupling 15mm (5pk)', meta: '0.4 mi · Screwfix Mile End', stock: true, best: false, price: '£5.89' },
+      { badge: 'badge-cp',  code: 'CP',  name: 'John Guest Speedfit 15mm Straight Connector (10pk)', meta: '1.2 mi · City Plumbing Stratford', stock: true, best: false, price: '£6.20' },
+      { badge: 'badge-bes', code: 'BES', name: '15mm Chrome Compression Straight Coupling (10pk)', meta: 'Online · Next day delivery', stock: true, best: false, price: '£7.50' }
+    ]
+  },
+  vaillant: {
+    label: 'Vaillant PCB',
+    rows: [
+      { badge: 'badge-hrp', code: 'HRP', name: 'Vaillant PCB 0020132764 Main Circuit Board', meta: 'Online · Next day delivery', stock: true, best: true, price: '£89.00' },
+      { badge: 'badge-bes', code: 'BES', name: 'Vaillant 0020132764 Printed Circuit Board', meta: 'Online · 1-2 days', stock: true, best: false, price: '£96.50' },
+      { badge: 'badge-cp',  code: 'CP',  name: 'Vaillant ecoTEC Pro PCB Assembly', meta: '1.2 mi · City Plumbing Stratford', stock: false, best: false, price: '£118.00' },
+      { badge: 'badge-sfx', code: 'SFX', name: 'Vaillant Compatible Control Board Kit', meta: '0.8 mi · Screwfix Bethnal Green', stock: false, best: false, price: '£124.99' }
+    ]
+  }
+};
+
+function setSearch(el) {
+  document.querySelectorAll('.search-tag').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  var key = el.getAttribute('data-key');
+  document.getElementById('demoSearch').value = MOCK_DATA[key].label;
+  showMockResults(key);
+}
+
+function runDemo() {
+  var val = document.getElementById('demoSearch').value.trim();
+  if (!val) return;
+  var key = Object.keys(MOCK_DATA).find(function(k) {
+    return MOCK_DATA[k].label.toLowerCase() === val.toLowerCase();
+  }) || 'honeywell';
+  showMockResults(key);
+}
+
+function showMockResults(key) {
+  var data = MOCK_DATA[key];
+  document.getElementById('searchTerm').textContent = data.label;
+
+  var html = '';
+  data.rows.forEach(function(r, i) {
+    var delay = (i * 0.08) + 's';
+    html += '<div class="result-row" style="animation-delay:' + delay + '">';
+    html += '<div class="supplier-badge ' + r.badge + '">' + r.code + '</div>';
+    html += '<div class="result-info">';
+    html += '<div class="result-name">' + r.name;
+    if (r.best) html += '<span class="best-tag">BEST PRICE</span>';
+    html += '</div>';
+    html += '<div class="result-meta"><span>' + r.meta + '</span>';
+    if (r.stock) {
+      html += '<span class="stock-yes">&#10003; In stock</span>';
+    } else {
+      html += '<span class="stock-no">&#10005; Out of stock</span>';
+    }
+    html += '</div></div>';
+    html += '<div class="result-price' + (r.best ? ' best' : '') + '">' + r.price + '</div>';
+    html += '</div>';
+  });
+
+  document.getElementById('mockRows').innerHTML = html;
+  var results = document.getElementById('mockResults');
+  results.style.display = 'block';
+  results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ============================================================
+// SIGNUP - saves to Supabase signups table
+// ============================================================
+function submitSignup() {
+  var name     = document.getElementById('sName').value.trim();
+  var email    = document.getElementById('sEmail').value.trim();
+  var gasSafe  = document.getElementById('sGasSafe').value;
+  var jobs     = document.getElementById('sJobs').value;
+  var supplier = document.getElementById('sSupplier').value;
+  var errEl    = document.getElementById('signupError');
+  var btn      = document.getElementById('submitBtn');
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  fetch(SUPABASE_URL + '/rest/v1/signups', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({
+      name: name || null,
+      email: email,
+      gas_safe: gasSafe || null,
+      jobs_per_week: jobs || null,
+      primary_supplier: supplier || null
+    })
+  })
+  .then(function(res) {
+    if (res.status === 409) {
+      // Already signed up
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('signupSuccess').style.display = 'block';
+      return;
+    }
+    if (!res.ok) throw new Error('Signup failed');
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+  })
+  .catch(function() {
+    // Still show success to not block the user
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>
