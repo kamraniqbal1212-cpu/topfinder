@@ -644,7 +644,7 @@ footer { background: var(--black); color: var(--gray-400); padding: 48px 0 32px;
     <div class="footer-inner">
       <div>
         <div class="footer-logo">Top <span>Finder</span></div>
-        <div class="footer-tagline">A project by Top Boiler Care</div>
+       <div class="footer-tagline">A project by <a href="https://topboilercare.co.uk" target="_blank" rel="noopener" style="color:var(--yellow); text-decoration:none; font-weight:600;">Top Boiler Care</a></div>
       </div>
       <ul class="footer-links">
         <li><a href="#how-it-works">How It Works</a></li>
@@ -664,7 +664,7 @@ footer { background: var(--black); color: var(--gray-400); padding: 48px 0 32px;
 // CONFIG - replace with your real Supabase credentials
 // ============================================================
 var SUPABASE_URL = 'https://mexpdmltvnausvupfndc.supabase.co';
-var SUPABASE_ANON_KEY = 'REPLACE_WITH_FRESH_ANON_KEY_AFTER_ROTATION';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1leHBkbWx0dm5hdXN2dXBmbmRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkzNDAsImV4cCI6MjA5MzA0NTM0MH0.Un9InuCnNZSo55180CKtK73S6KVr4gX1ISWgiSz29Ec';
 
 // ============================================================
 // MOCK RESULTS DATA - unique per search tag
@@ -771,7 +771,6 @@ function submitSignup() {
   var name     = document.getElementById('sName').value.trim();
   var email    = document.getElementById('sEmail').value.trim();
   var gasSafe  = document.getElementById('sGasSafe').value;
-  var jobs     = document.getElementById('sJobs').value;
   var supplier = document.getElementById('sSupplier').value;
   var errEl    = document.getElementById('signupError');
   var btn      = document.getElementById('submitBtn');
